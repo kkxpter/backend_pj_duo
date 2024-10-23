@@ -2,6 +2,19 @@ var express = require('express');
 var conn = require('../dbcon'); // เชื่อมต่อกับฐานข้อมูล
 var router = express.Router();
 
+// API สำหรับ GET ข้อมูลทั้งหมดจาก table user
+router.get('/get', (req, res) => {
+  const sql = 'SELECT * FROM users';
+
+  conn.query(sql, (err, results) => {
+    if (err) {
+      console.error('Error fetching users:', err);
+      return res.status(500).json({ error: 'Database query error' });
+    }
+    res.status(200).json(results); // ส่งข้อมูลเป็น JSON
+  });
+});
+
 // API สำหรับ INSERT ข้อมูลผู้ใช้ พร้อมรูปภาพ Base64
 router.post('/insert', (req, res) => {
   const { name, password, address, phone, latitude, longitude, img } = req.body;
