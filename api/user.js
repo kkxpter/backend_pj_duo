@@ -16,7 +16,7 @@ router.get('/get', (req, res) => {
 });
 
 // API สำหรับ INSERT ข้อมูลผู้ใช้ พร้อมรูปภาพ Base64
-router.post('/insert', (req, res) => {
+router.post('/register', (req, res) => {
   const { name, password, address, phone, latitude, longitude, img } = req.body;
 
   // ตรวจสอบว่าข้อมูลจำเป็นถูกส่งมาครบหรือไม่
