@@ -37,7 +37,7 @@ router.post('/register', (req, res) => {
       return res.status(500).json({ error: 'Database insertion error' });
     }
 
-    res.status(201).json({ message: 'User inserted successfully', result });
+    res.status(201).json({ message: 'Rider inserted successfully', result });
   });
 });
 router.post("/login", (req, res) => {
@@ -48,7 +48,7 @@ router.post("/login", (req, res) => {
   }
 
   try {
-      conn.query("SELECT * FROM users WHERE phone = ?", [phone], (err, result) => {
+      conn.query("SELECT * FROM rider WHERE phone = ?", [phone], (err, result) => {
           if (err) {
               console.error(err);
               return res.status(500).json({ error: 'Database query error' });
@@ -56,16 +56,16 @@ router.post("/login", (req, res) => {
 
           // ตรวจสอบว่าพบผู้ใช้หรือไม่
           if (result.length === 0) {
-              return res.status(404).json({ error: 'User not found' });
+              return res.status(404).json({ error: 'Rider not found' });
           }
 
-          const user = result[0];
-          if (password !== user.password) {
+          const rider = result[0];
+          if (password !== rider.password) {
               return res.status(401).json({ error: 'Invalid phone or password' });
           }
 
           // ลบการสร้างและส่ง token
-          res.status(200).json({ message: 'Login successful', user });
+          res.status(200).json({ message: 'Login successful', rider });
       });
   } catch (err) {
       console.error(err);
