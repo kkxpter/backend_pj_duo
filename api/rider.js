@@ -2,7 +2,7 @@ var express = require('express');
 var conn = require('../dbcon'); // เชื่อมต่อกับฐานข้อมูล
 var router = express.Router();
 
-// API สำหรับ GET ข้อมูลทั้งหมดจาก table user
+
 router.get('/get', (req, res) => {
   const sql = 'SELECT * FROM rider';
 
@@ -15,17 +15,17 @@ router.get('/get', (req, res) => {
   });
 });
 
-// API สำหรับ INSERT ข้อมูลผู้ใช้ พร้อมรูปภาพ Base64
+
 router.post('/register', (req, res) => {
   const { name, password, phone, car_registration, img } = req.body;
 
   // ตรวจสอบว่าข้อมูลจำเป็นถูกส่งมาครบหรือไม่
-  if (!name || !password || !phone || car_registration || !img) {
+  if (!name || !password || !phone || !car_registration || !img) {
     return res.status(400).json({ error: 'Please provide all required fields' });
   }
 
   const sql = `
-    INSERT INTO users (name, password, phone, car_registration, img) 
+    INSERT INTO rider (name, password, phone, car_registration, img) 
     VALUES (?, ?, ?, ?, ?)
   `;
   const values = [name, password, phone, car_registration, img];
