@@ -24,22 +24,40 @@ router.post('/register', (req, res) => {
     return res.status(400).json({ error: 'Please provide all required fields' });
   }
 
-  const sql = `
-    INSERT INTO users (name, password, address, phone, latitude, longitude, img) 
-    VALUES (?, ?, ?, ?, ?, ?, ?)
-  `;
-  const values = [name, password, address, phone, latitude, longitude, img];
-
-  // ทำการ INSERT ข้อมูลลงในฐานข้อมูล
-  conn.query(sql, values, (err, result) => {
+  // ตรวจสอบว่าเบอร์โทรศัพท์ซ้ำหรือไม่
+  const checkPhoneSql = `SELECT * FROM users WHERE phone = ?`;
+  
+  conn.query(checkPhoneSql, [phone], (err, results) => {
     if (err) {
-      console.error('Error inserting user:', err);
-      return res.status(500).json({ error: 'Database insertion error' });
+      console.error('Error checking phone:', err);
+      return res.status(500).json({ error: 'Database query error' });
     }
 
-    res.status(201).json({ message: 'User inserted successfully', result });
+    if (results.length > 0) {
+      // ถ้าเบอร์โทรซ้ำ ให้ส่งสถานะ 409 Conflict
+      return res.status(409).json({ error: 'Phone number already exists' });
+    }
+
+    // ถ้าเบอร์ไม่ซ้ำ ให้ทำการ INSERT ข้อมูลลงในฐานข้อมูล
+    const insertSql = `
+      INSERT INTO users (name, password, address, phone, latitude, longitude, img) 
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `;
+    const values = [name, password, address, phone, latitude, longitude, img];
+
+    conn.query(insertSql, values, (err, result) => {
+      if (err) {
+        console.error('Error inserting user:', err);
+        return res.status(500).json({ error: 'Database insertion error' });
+      }
+
+      res.status(201).json({ message: 'User inserted successfully', result });
+    });
   });
 });
+
+
+
 router.post("/login", (req, res) => {
   const { phone, password } = req.body;
 
