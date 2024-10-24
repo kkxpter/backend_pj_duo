@@ -40,5 +40,36 @@ router.post('/register', (req, res) => {
     res.status(201).json({ message: 'User inserted successfully', result });
   });
 });
+router.post("/login", (req, res) => {
+  const { phone, password } = req.body;
 
+  if (!phone || !password) {
+      return res.status(400).json({ error: 'Phone and password are required' });
+  }
+
+  try {
+      conn.query("SELECT * FROM users WHERE phone = ?", [phone], (err, result) => {
+          if (err) {
+              console.error(err);
+              return res.status(500).json({ error: 'Database query error' });
+          }
+
+          // ตรวจสอบว่าพบผู้ใช้หรือไม่
+          if (result.length === 0) {
+              return res.status(404).json({ error: 'User not found' });
+          }
+
+          const user = result[0];
+          if (password !== user.password) {
+              return res.status(401).json({ error: 'Invalid phone or password' });
+          }
+
+          // ลบการสร้างและส่ง token
+          res.status(200).json({ message: 'Login successful', user });
+      });
+  } catch (err) {
+      console.error(err);
+      return res.status(500).json({ error: 'Server error' });
+  }
+});
 module.exports = router;
